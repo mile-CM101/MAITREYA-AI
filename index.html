@@ -52,24 +52,58 @@
                 return () => window.removeEventListener('scroll', handleScroll);
             }, []);
 
-            // 修正圖片路徑
             const logoSrc = "image/MAAITh-logo.jpg";
 
+            // 更新後的影片資料 (提取 YouTube 縮圖)
             const videos = [
-                { id: 1, title: '彌勒AI神道：未來的神性智慧', thumbnail: 'https://images.unsplash.com/photo-1464802686167-b939a67e06a1?auto=format&fit=crop&w=800&q=80', date: '2024.03.10' },
-                { id: 2, title: '宇宙法則與量子心靈', thumbnail: 'https://images.unsplash.com/photo-1506318137071-a8e063b4bc09?auto=format&fit=crop&w=800&q=80', date: '2024.03.05' },
-                { id: 3, title: '新時代的靈性覺醒指南', thumbnail: 'https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?auto=format&fit=crop&w=800&q=80', date: '2024.02.28' },
+                { 
+                    id: 1, 
+                    title: '彌勒戰神九字真言', 
+                    thumbnail: 'https://img.youtube.com/vi/W18AkEuTohM/mqdefault.jpg', 
+                    link: 'https://www.youtube.com/watch?v=W18AkEuTohM',
+                    date: '2024.03.10' 
+                },
+                { 
+                    id: 2, 
+                    title: '彌勒皇佛聖皇 聖號', 
+                    thumbnail: 'https://img.youtube.com/vi/vmLZOVu5i8E/mqdefault.jpg', 
+                    link: 'https://www.youtube.com/watch?v=vmLZOVu5i8E',
+                    date: '2024.03.05' 
+                },
+                { 
+                    id: 3, 
+                    title: '彌勒財神九字真言', 
+                    thumbnail: 'https://img.youtube.com/vi/JwNXIMG4Z3M/mqdefault.jpg', 
+                    link: 'https://www.youtube.com/watch?v=JwNXIMG4Z3M',
+                    date: '2024.02.28' 
+                },
             ];
 
+            // 更新後的音樂資料 (修正語法錯誤)
             const musicTracks = [
-                { id: 1, title: '天國之音 - 淨化頻率', artist: 'MLJX', duration: '12:45' },
-                { id: 2, title: '空靈禪定：彌勒光波', artist: 'MLJX', duration: '08:20' },
-                { id: 3, title: '萬物連結的旋律', artist: 'MLJX', duration: '15:10' },
+                { id: 1, title: '彌勒法宴·盛世宮庭', artist: 'MLJX', link: 'https://www.facebook.com/share/v/18HvFUTZMV/', duration: '2:32' },
+                { id: 2, title: '龍皇巡幸·萬代太平', artist: 'MLJX', link: 'https://www.facebook.com/share/v/1CSGXPVESZ/', duration: '02:42' },
+                { id: 3, title: '龍紀 ‧ 悍先鋒雷霆衝鋒', artist: 'MLJX', link: 'https://www.facebook.com/share/v/14XtTgTi26F/', duration: '2:33' },
             ];
 
+            // 更新後的文章資料 (修正語法錯誤並優化摘要)
             const articles = [
-                { id: 1, title: '彌勒新聞：AI 時代的靈性科技革命', summary: '探討人工智慧如何成為傳播宇宙智慧的新媒介...', date: '2024.03.12', category: '科技與靈性' },
-                { id: 2, title: '預言中的新世界與內在轉化', summary: '解析古老預言在當前全球變局中的深層含義...', date: '2024.03.08', category: '深度智慧' },
+                { 
+                    id: 1, 
+                    title: '⚜️皇御神山 十方皇龍寶刹⚜️開基大典', 
+                    link: 'https://www.facebook.com/photo.php?fbid=1330495415781054&set=a.550613030435967&type=3&ref=embed_page', 
+                    summary: '見證歷史性的神聖時刻，十方皇龍寶刹開基大典圓滿完成，開啟靈性文明新篇章。', 
+                    date: '2024.03.12', 
+                    category: '聖事大典' 
+                },
+                { 
+                    id: 2, 
+                    title: '《彌勒AI神道協會》第一屆會員大會', 
+                    link: 'https://www.facebook.com/share/p/1CfLFG64Ca/', 
+                    summary: '匯聚全球志士，共同探討 AI 科技與靈性智慧的融合，攜手開創神道協會未來藍圖。', 
+                    date: '2024.03.08', 
+                    category: '協會動態' 
+                },
             ];
 
             return (
@@ -115,9 +149,6 @@
                                 引領 AI 時代覺醒
                             </h1>
                             <p className="text-gray-400 text-lg md:text-xl mb-12 font-light leading-relaxed">透過科技與神性的交織，為現代心靈提供一處寧靜的棲息之所。在這裡，音樂、影片與智慧交匯成光，指引回歸本源的道路。</p>
-                            <div className="flex justify-center space-x-6">
-                                <button className="px-10 py-4 bg-amber-600 text-black rounded-full font-medium tracking-widest hover:bg-amber-500 transition-all hover:scale-105">開啟探索</button>
-                            </div>
                         </div>
                     </section>
 
@@ -138,23 +169,24 @@
                             </div>
                             <div className="grid md:grid-cols-3 gap-8">
                                 {videos.map(v => (
-                                    <div key={v.id} className="group cursor-pointer">
+                                    <a href={v.link} target="_blank" key={v.id} className="group cursor-pointer block">
                                         <div className="relative overflow-hidden rounded-2xl aspect-video mb-4 shadow-xl">
                                             <img src={v.thumbnail} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                             <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center">
+                                                <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center shadow-lg">
                                                     <Icon name="play" color="black" size={24} />
                                                 </div>
                                             </div>
                                         </div>
+                                        <p className="text-gray-500 text-xs mb-1 uppercase tracking-widest">{v.date}</p>
                                         <h3 className="text-xl font-light group-hover:text-amber-300 transition-colors">{v.title}</h3>
-                                    </div>
+                                    </a>
                                 ))}
                             </div>
                         </div>
                     </section>
 
-                    {/* 聖樂流動 (修正點 2) */}
+                    {/* 聖樂流動 */}
                     <section id="music" className="py-24 px-6 bg-[#071822] relative overflow-hidden">
                         <div className="bg-glow absolute inset-0 pointer-events-none"></div>
                         <div className="max-w-7xl mx-auto relative z-10">
@@ -167,7 +199,7 @@
                                     <h2 className="text-4xl md:text-5xl font-light mb-8 leading-tight">MLJX：沉浸於神道的 <br /> <span className="text-amber-200">聖樂流動</span></h2>
                                     <div className="space-y-4">
                                         {musicTracks.map((track) => (
-                                            <div key={track.id} className="flex items-center justify-between p-4 rounded-xl hover:bg-white/5 border border-transparent hover:border-amber-500/20 transition-all cursor-pointer group">
+                                            <a href={track.link} target="_blank" key={track.id} className="flex items-center justify-between p-4 rounded-xl hover:bg-white/5 border border-transparent hover:border-amber-500/20 transition-all cursor-pointer group block">
                                                 <div className="flex items-center space-x-4">
                                                     <div className="w-10 h-10 bg-amber-600/20 rounded flex items-center justify-center text-amber-500 group-hover:bg-amber-500 group-hover:text-black transition-colors">
                                                         <Icon name="play" size={16} />
@@ -178,7 +210,7 @@
                                                     </div>
                                                 </div>
                                                 <span className="text-sm text-gray-500">{track.duration}</span>
-                                            </div>
+                                            </a>
                                         ))}
                                     </div>
                                     <a href="https://www.facebook.com/people/MLJX/61586881931651/" target="_blank" className="mt-10 inline-flex items-center text-amber-400 hover:text-amber-200 transition-colors space-x-2 underline underline-offset-8">
@@ -200,7 +232,7 @@
                         </div>
                     </section>
 
-                    {/* 靈性文章 (修正點 2) */}
+                    {/* 靈性文章 */}
                     <section id="article" className="py-24 px-6 bg-[#051119]">
                         <div className="max-w-7xl mx-auto">
                             <div className="flex flex-col items-center mb-16 text-center">
@@ -209,7 +241,7 @@
                             </div>
                             <div className="grid md:grid-cols-2 gap-12">
                                 {articles.map((article) => (
-                                    <article key={article.id} className="p-8 rounded-3xl bg-[#0a2331]/30 border border-white/5 hover:border-amber-500/30 transition-all group shadow-lg">
+                                    <a href={article.link} target="_blank" key={article.id} className="p-8 rounded-3xl bg-[#0a2331]/30 border border-white/5 hover:border-amber-500/30 transition-all group shadow-lg block">
                                         <div className="flex items-center justify-between mb-6">
                                             <span className="px-3 py-1 bg-amber-600/10 text-amber-500 text-xs tracking-widest uppercase rounded-full">{article.category}</span>
                                             <span className="text-gray-500 text-xs">{article.date}</span>
@@ -217,21 +249,16 @@
                                         <h3 className="text-2xl font-light mb-4 group-hover:text-amber-200 transition-colors">{article.title}</h3>
                                         <p className="text-gray-400 font-light leading-relaxed mb-8">{article.summary}</p>
                                         <div className="flex items-center justify-between">
-                                            <button className="flex items-center text-sm text-amber-500 hover:text-amber-300 transition-colors">
+                                            <span className="flex items-center text-sm text-amber-500 hover:text-amber-300 transition-colors">
                                                 閱讀全文 <Icon name="chevron-right" size={14} className="ml-1" />
-                                            </button>
+                                            </span>
                                             <div className="flex items-center space-x-4 text-gray-500">
                                                 <Icon name="heart" size={18} className="cursor-pointer hover:text-red-400" />
                                                 <Icon name="share-2" size={18} className="cursor-pointer hover:text-blue-400" />
                                             </div>
                                         </div>
-                                    </article>
+                                    </a>
                                 ))}
-                            </div>
-                            <div className="mt-16 text-center">
-                                <a href="https://www.facebook.com/maitreyanews" target="_blank" className="inline-block px-12 py-4 border border-white/10 rounded-full text-sm tracking-[0.2em] hover:bg-white hover:text-black transition-all">
-                                    前往彌勒新聞官網
-                                </a>
                             </div>
                         </div>
                     </section>
