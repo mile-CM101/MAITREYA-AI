@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>彌勒AI神道 - 引領 AI 時代覺醒</title>
-    <!-- Tailwind CSS -->
-    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
-    <!-- React & Babel -->
-    <script src="[https://unpkg.com/react@18/umd/react.production.min.js](https://unpkg.com/react@18/umd/react.production.min.js)"></script>
-    <script src="[https://unpkg.com/react-dom@18/umd/react-dom.production.min.js](https://unpkg.com/react-dom@18/umd/react-dom.production.min.js)"></script>
-    <script src="[https://unpkg.com/@babel/standalone/babel.min.js](https://unpkg.com/@babel/standalone/babel.min.js)"></script>
-    <!-- Lucide Icons (UMD) -->
-    <script src="[https://unpkg.com/lucide@latest](https://unpkg.com/lucide@latest)"></script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
     <style>
-        @import url('[https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap](https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap)');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        
         body { 
             font-family: 'Noto Sans TC', sans-serif; 
             background-color: #051119; 
@@ -22,36 +22,58 @@
             scroll-behavior: smooth; 
             overflow-x: hidden;
         }
-        .selection-amber::selection { background-color: rgba(217, 119, 6, 0.3); }
+
+        .selection-amber::selection { background-color: rgba(245, 158, 11, 0.3); }
+        
         .bg-glow {
-            background: radial-gradient(circle at center, rgba(217, 119, 6, 0.1) 0%, transparent 70%);
+            background: radial-gradient(circle at center, rgba(245, 158, 11, 0.1) 0%, transparent 70%);
         }
-        /* 優化 FB 內嵌容器，確保即使沒載入也有高度 */
-        .fb-container {
-            min-height: 300px;
-            background: rgba(255,255,255,0.02);
+
+        /* 影片容器：確保在手機上也能等比例縮放 */
+        .iframe-container {
             border-radius: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            transition: all 0.3s ease;
+            width: 267px;
+            height: 476px;
+            margin: 0 auto;
         }
-        iframe { border-radius: 1rem; }
+
+        .iframe-container:hover {
+            border-color: rgba(245, 158, 11, 0.5);
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.1);
+        }
+
+        /* 文章嵌入容器：修正手機版寬度 */
+        .article-frame-wrapper {
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto;
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid rgba(245, 158, 11, 0.1);
+            background: rgba(255, 255, 255, 0.02);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 讓內容物在小螢幕自動適應 */
+        @media (max-width: 550px) {
+            .article-frame-wrapper iframe {
+                width: 100% !important;
+            }
+        }
     </style>
 </head>
 <body class="selection-amber">
-    <!-- Facebook SDK -->
-    <div id="fb-root"></div>
-    <script async defer crossorigin="anonymous" src="[https://connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v18.0](https://connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v18.0)"></script>
-
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useRef } = React;
+        const { useState, useEffect } = React;
         
-        // 強化版圖標組件
+        // 圖標組件：增加安全檢查
         const Icon = ({ name, size = 24, className = "" }) => {
-            const iconRef = useRef(null);
             useEffect(() => {
                 if (window.lucide) {
                     window.lucide.createIcons();
@@ -68,29 +90,24 @@
             useEffect(() => {
                 const handleScroll = () => setScrolled(window.scrollY > 50);
                 window.addEventListener('scroll', handleScroll);
-                // 延遲解析 FB XFBML
-                const timer = setTimeout(() => {
-                    if (window.FB) window.FB.XFBML.parse();
-                }, 2000);
-                return () => {
-                    window.removeEventListener('scroll', handleScroll);
-                    clearTimeout(timer);
-                };
+                // 初始檢查圖標
+                if (window.lucide) window.lucide.createIcons();
+                return () => window.removeEventListener('scroll', handleScroll);
             }, []);
 
             const logoSrc = "image/MAAITh-logo.jpg";
-            const fallbackLogo = "[https://via.placeholder.com/150/0a2331/amber?text=MAAI](https://via.placeholder.com/150/0a2331/amber?text=MAAI)";
+            const fallbackLogo = "https://via.placeholder.com/150/0a2331/amber?text=MAAI";
 
             const videos = [
-                { id: 1, title: '彌勒戰神九字真言', ytId: 'W18AkEuTohM', thumbnail: '[https://img.youtube.com/vi/W18AkEuTohM/maxresdefault.jpg](https://img.youtube.com/vi/W18AkEuTohM/maxresdefault.jpg)' },
-                { id: 2, title: '彌勒皇佛聖皇 聖號', ytId: 'vmLZOVu5i8E', thumbnail: '[https://img.youtube.com/vi/vmLZOVu5i8E/maxresdefault.jpg](https://img.youtube.com/vi/vmLZOVu5i8E/maxresdefault.jpg)' },
-                { id: 3, title: '彌勒財神九字真言', ytId: 'JwNXIMG4Z3M', thumbnail: '[https://img.youtube.com/vi/JwNXIMG4Z3M/maxresdefault.jpg](https://img.youtube.com/vi/JwNXIMG4Z3M/maxresdefault.jpg)' },
+                { id: 1, title: '彌勒戰神九字真言', ytId: 'W18AkEuTohM', thumbnail: 'https://img.youtube.com/vi/W18AkEuTohM/maxresdefault.jpg' },
+                { id: 2, title: '彌勒皇佛聖皇 聖號', ytId: 'vmLZOVu5i8E', thumbnail: 'https://img.youtube.com/vi/vmLZOVu5i8E/maxresdefault.jpg' },
+                { id: 3, title: '彌勒財神九字真言', ytId: 'JwNXIMG4Z3M', thumbnail: 'https://img.youtube.com/vi/JwNXIMG4Z3M/maxresdefault.jpg' },
             ];
 
             const musicTracks = [
-                { id: 1, title: '彌勒法宴·盛世宮庭', fbLink: '[https://www.facebook.com/share/v/18HvFUTZMV/](https://www.facebook.com/share/v/18HvFUTZMV/)' },
-                { id: 2, title: '龍皇巡幸·萬代太平', fbLink: '[https://www.facebook.com/share/v/1CSGXPVESZ/](https://www.facebook.com/share/v/1CSGXPVESZ/)' },
-                { id: 3, title: '龍紀 ‧ 悍先鋒雷霆衝鋒', fbLink: '[https://www.facebook.com/share/v/14XtTgTi26F/](https://www.facebook.com/share/v/14XtTgTi26F/)' },
+                { id: 1, title: '彌勒法宴·盛世宮庭', embedUrl: "https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F2001767493708806%2F&show_text=false&width=267&t=0" },
+                { id: 2, title: '龍皇巡幸·萬代太平', embedUrl: "https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F25827806453507871%2F&show_text=false&width=267&t=0" },
+                { id: 3, title: '龍紀 ‧ 悍先鋒雷霆衝鋒', embedUrl: "https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F1473345457743249%2F&show_text=false&width=267&t=0" },
             ];
 
             return (
@@ -101,18 +118,19 @@
                             <div className="flex items-center space-x-3">
                                 <img 
                                     src={logoSrc} 
-                                    onError={(e) => e.target.src = fallbackLogo} 
+                                    onError={(e) => { e.target.src = fallbackLogo; }} 
                                     className="w-12 h-12 rounded-full border border-amber-500/30 shadow-lg object-cover" 
+                                    alt="Logo"
                                 />
                                 <span className="text-xl font-light tracking-[0.2em] text-amber-50 uppercase hidden sm:block">彌勒AI神道</span>
                             </div>
                             <div className="hidden md:flex items-center space-x-10 text-sm tracking-widest uppercase">
-                                <a href="#home" className="hover:text-amber-300">首頁</a>
-                                <a href="#video" className="hover:text-amber-300">影片牆</a>
-                                <a href="#music" className="hover:text-amber-300">聖樂流動</a>
-                                <a href="#article" className="hover:text-amber-300">靈性文章</a>
+                                <a href="#home" className="hover:text-amber-300 transition-colors">首頁</a>
+                                <a href="#video" className="hover:text-amber-300 transition-colors">影片牆</a>
+                                <a href="#music" className="hover:text-amber-300 transition-colors">聖樂流動</a>
+                                <a href="#article" className="hover:text-amber-300 transition-colors">靈性文章</a>
                             </div>
-                            <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                            <button className="md:hidden text-amber-500" onClick={() => setIsMenuOpen(!isMenuOpen)}>
                                 <Icon name={isMenuOpen ? "x" : "menu"} />
                             </button>
                         </div>
@@ -132,10 +150,10 @@
                     <section id="home" className="relative h-screen flex items-center justify-center">
                         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#051119]"></div>
                         <div className="relative z-10 text-center px-6">
-                            <h1 className="text-6xl md:text-8xl font-light mb-6 tracking-tighter">
-                                <span className="bg-gradient-to-r from-amber-200 to-yellow-500 bg-clip-text text-transparent">彌勒AI神道</span>
+                            <h1 className="text-5xl md:text-8xl font-light mb-6 tracking-tight">
+                                <span className="bg-gradient-to-r from-amber-200 to-yellow-500 bg-clip-text text-transparent font-medium">彌勒AI神道</span>
                             </h1>
-                            <p className="text-gray-400 text-lg md:text-xl tracking-[0.3em] font-light">引領 AI 時代覺醒</p>
+                            <p className="text-gray-400 text-lg md:text-xl tracking-[0.3em] font-light italic">引領 AI 時代覺醒</p>
                         </div>
                     </section>
 
@@ -147,63 +165,91 @@
                         <div className="grid md:grid-cols-3 gap-8">
                             {videos.map(v => (
                                 <div key={v.id} className="group">
-                                    <div className="relative aspect-video rounded-2xl overflow-hidden bg-black mb-4 shadow-2xl">
+                                    <div className="relative aspect-video rounded-2xl overflow-hidden bg-black mb-4 shadow-2xl border border-white/5">
                                         {activeYtId === v.ytId ? (
                                             <iframe 
                                                 className="w-full h-full"
-                                                src={`https://www.youtube.com/embed/${v.ytId}?autoplay=1`}
-                                                allow="autoplay; encrypted-media"
+                                                src={`https://www.youtube.com/embed/${v.ytId}?autoplay=1&rel=0`}
+                                                title={v.title}
+                                                frameBorder="0"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                                 allowFullScreen
                                             ></iframe>
                                         ) : (
-                                            <div className="cursor-pointer h-full" onClick={() => setActiveYtId(v.ytId)}>
-                                                <img src={v.thumbnail} className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform" />
+                                            <div className="cursor-pointer h-full relative" onClick={() => setActiveYtId(v.ytId)}>
+                                                <img src={v.thumbnail} className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform" alt={v.title} />
                                                 <div className="absolute inset-0 flex items-center justify-center">
                                                     <Icon name="play" className="text-amber-500" size={48} />
                                                 </div>
                                             </div>
                                         )}
                                     </div>
-                                    <h3 className="text-lg font-light group-hover:text-amber-300 transition-colors">{v.title}</h3>
+                                    <h3 className="text-lg font-light group-hover:text-amber-300 transition-colors text-center">{v.title}</h3>
                                 </div>
                             ))}
                         </div>
                     </section>
 
-                    {/* 聖樂流動 (FB 內嵌) */}
-                    <section id="music" className="py-24 px-6 bg-[#071822]">
-                        <div className="max-w-7xl mx-auto">
-                            <h2 className="text-3xl font-light mb-12 flex items-center gap-3">
+                    {/* 聖樂流動 */}
+                    <section id="music" className="py-24 px-6 bg-[#071822] relative">
+                        <div className="bg-glow absolute inset-0 pointer-events-none"></div>
+                        <div className="max-w-7xl mx-auto relative z-10">
+                            <h2 className="text-3xl font-light mb-16 flex items-center justify-center gap-3">
                                 <Icon name="music" className="text-amber-500" /> 聖樂流動
                             </h2>
-                            <div className="grid lg:grid-cols-3 gap-8">
+                            <div className="grid lg:grid-cols-3 gap-12 items-start">
                                 {musicTracks.map(t => (
-                                    <div key={t.id} className="fb-container flex-col p-4 border border-white/5">
-                                        <div className="text-xs text-amber-500/50 mb-4 tracking-widest">{t.title}</div>
-                                        <div className="fb-video" data-href={t.fbLink} data-width="auto" data-show-text="false">
-                                            <div className="fb-xfbml-parse-ignore">
-                                                <a href={t.fbLink} className="text-amber-500 text-sm flex items-center gap-2">
-                                                    <Icon name="external-link" size={14} /> 前往 Facebook 聆聽
-                                                </a>
-                                            </div>
+                                    <div key={t.id} className="flex flex-col items-center">
+                                        <div className="iframe-container shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                                            <iframe 
+                                                src={t.embedUrl} 
+                                                width="267" 
+                                                height="476" 
+                                                style={{border:'none', overflow:'hidden'}} 
+                                                scrolling="no" 
+                                                frameBorder="0" 
+                                                allowFullScreen={true} 
+                                                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                                            ></iframe>
                                         </div>
+                                        <h4 className="mt-6 text-amber-200 font-light tracking-widest text-lg text-center px-4">{t.title}</h4>
                                     </div>
                                 ))}
                             </div>
                         </div>
                     </section>
 
-                    {/* 靈性文章 (FB 內嵌) */}
+                    {/* 靈性文章 */}
                     <section id="article" className="py-24 px-6">
-                        <div className="max-w-4xl mx-auto">
-                            <h2 className="text-3xl font-light mb-12 text-center">靈性文章</h2>
-                            <div className="fb-container flex-col gap-6">
-                                <div className="fb-post" data-href="[https://www.facebook.com/maitreyanews/posts/pfbid0f7GzD](https://www.facebook.com/maitreyanews/posts/pfbid0f7GzD)" data-width="auto">
-                                    <div className="fb-xfbml-parse-ignore">
-                                        <blockquote cite="[https://www.facebook.com/maitreyanews](https://www.facebook.com/maitreyanews)">
-                                            <a href="[https://www.facebook.com/maitreyanews](https://www.facebook.com/maitreyanews)" className="text-amber-500">前往彌勒新聞官網閱讀</a>
-                                        </blockquote>
-                                    </div>
+                        <div className="max-w-7xl mx-auto">
+                            <h2 className="text-3xl font-light mb-16 text-center flex items-center justify-center gap-3">
+                                <Icon name="book-open" className="text-amber-500" /> 靈性文章
+                            </h2>
+                            <div className="flex flex-col items-center gap-16">
+                                <div className="article-frame-wrapper">
+                                    <iframe 
+                                        src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fmaitreyanews%2Fposts%2Fpfbid0V6i7oyY7xPpn3HyNisLXwKMPYpz1UZBkKuifQMTpZz7XqFn5X2A1f91W6MX45HW6l&show_text=true&width=500" 
+                                        width="100%" 
+                                        height="250" 
+                                        style={{border:'none', overflow:'hidden'}} 
+                                        scrolling="no" 
+                                        frameBorder="0" 
+                                        allowFullScreen={true} 
+                                        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                                    ></iframe>
+                                </div>
+
+                                <div className="article-frame-wrapper">
+                                    <iframe 
+                                        src="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fmaitreyanews%2Fposts%2Fpfbid0L873yriURCW24KiJQLy8ACStULgEzChNyKnVV7e7VU3WYkPrKdCrfKoVsZmHyj7cl&show_text=true&width=500" 
+                                        width="100%" 
+                                        height="690" 
+                                        style={{border:'none', overflow:'hidden'}} 
+                                        scrolling="no" 
+                                        frameBorder="0" 
+                                        allowFullScreen={true} 
+                                        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                                    ></iframe>
                                 </div>
                             </div>
                         </div>
