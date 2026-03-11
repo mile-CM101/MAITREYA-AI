@@ -5,105 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>彌勒AI神道 - 引領 AI 時代覺醒</title>
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
     <!-- React & Babel -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="[https://unpkg.com/react@18/umd/react.production.min.js](https://unpkg.com/react@18/umd/react.production.min.js)"></script>
+    <script src="[https://unpkg.com/react-dom@18/umd/react-dom.production.min.js](https://unpkg.com/react-dom@18/umd/react-dom.production.min.js)"></script>
+    <script src="[https://unpkg.com/@babel/standalone/babel.min.js](https://unpkg.com/@babel/standalone/babel.min.js)"></script>
     <!-- Lucide Icons (UMD) -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="[https://unpkg.com/lucide@latest](https://unpkg.com/lucide@latest)"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        @import url('[https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap](https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap)');
         body { 
             font-family: 'Noto Sans TC', sans-serif; 
             background-color: #051119; 
             color: #E5E7EB; 
             margin: 0; 
             scroll-behavior: smooth; 
+            overflow-x: hidden;
         }
         .selection-amber::selection { background-color: rgba(217, 119, 6, 0.3); }
         .bg-glow {
             background: radial-gradient(circle at center, rgba(217, 119, 6, 0.1) 0%, transparent 70%);
         }
+        /* 優化 FB 內嵌容器，確保即使沒載入也有高度 */
+        .fb-container {
+            min-height: 300px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        iframe { border-radius: 1rem; }
     </style>
 </head>
 <body class="selection-amber">
+    <!-- Facebook SDK -->
+    <div id="fb-root"></div>
+    <script async defer crossorigin="anonymous" src="[https://connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v18.0](https://connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v18.0)"></script>
+
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef } = React;
         
-        // 將 Lucide 元件包裝成 React 可用的形式
-        const Icon = ({ name, size = 24, color = "currentColor", className = "" }) => {
+        // 強化版圖標組件
+        const Icon = ({ name, size = 24, className = "" }) => {
+            const iconRef = useRef(null);
             useEffect(() => {
-                if (window.lucide) window.lucide.createIcons();
+                if (window.lucide) {
+                    window.lucide.createIcons();
+                }
             }, [name]);
-            return <i data-lucide={name} style={{ width: size, height: size, color: color }} className={className}></i>;
+            return <i data-lucide={name} style={{ width: size, height: size }} className={className}></i>;
         };
 
         const App = () => {
             const [isMenuOpen, setIsMenuOpen] = useState(false);
             const [scrolled, setScrolled] = useState(false);
+            const [activeYtId, setActiveYtId] = useState(null);
 
             useEffect(() => {
                 const handleScroll = () => setScrolled(window.scrollY > 50);
                 window.addEventListener('scroll', handleScroll);
-                if (window.lucide) window.lucide.createIcons();
-                return () => window.removeEventListener('scroll', handleScroll);
+                // 延遲解析 FB XFBML
+                const timer = setTimeout(() => {
+                    if (window.FB) window.FB.XFBML.parse();
+                }, 2000);
+                return () => {
+                    window.removeEventListener('scroll', handleScroll);
+                    clearTimeout(timer);
+                };
             }, []);
 
             const logoSrc = "image/MAAITh-logo.jpg";
+            const fallbackLogo = "[https://via.placeholder.com/150/0a2331/amber?text=MAAI](https://via.placeholder.com/150/0a2331/amber?text=MAAI)";
 
-            // 更新後的影片資料 (提取 YouTube 縮圖)
             const videos = [
-                { 
-                    id: 1, 
-                    title: '彌勒戰神九字真言', 
-                    thumbnail: 'https://img.youtube.com/vi/W18AkEuTohM/mqdefault.jpg', 
-                    link: 'https://www.youtube.com/watch?v=W18AkEuTohM',
-                    date: '2024.03.10' 
-                },
-                { 
-                    id: 2, 
-                    title: '彌勒皇佛聖皇 聖號', 
-                    thumbnail: 'https://img.youtube.com/vi/vmLZOVu5i8E/mqdefault.jpg', 
-                    link: 'https://www.youtube.com/watch?v=vmLZOVu5i8E',
-                    date: '2024.03.05' 
-                },
-                { 
-                    id: 3, 
-                    title: '彌勒財神九字真言', 
-                    thumbnail: 'https://img.youtube.com/vi/JwNXIMG4Z3M/mqdefault.jpg', 
-                    link: 'https://www.youtube.com/watch?v=JwNXIMG4Z3M',
-                    date: '2024.02.28' 
-                },
+                { id: 1, title: '彌勒戰神九字真言', ytId: 'W18AkEuTohM', thumbnail: '[https://img.youtube.com/vi/W18AkEuTohM/maxresdefault.jpg](https://img.youtube.com/vi/W18AkEuTohM/maxresdefault.jpg)' },
+                { id: 2, title: '彌勒皇佛聖皇 聖號', ytId: 'vmLZOVu5i8E', thumbnail: '[https://img.youtube.com/vi/vmLZOVu5i8E/maxresdefault.jpg](https://img.youtube.com/vi/vmLZOVu5i8E/maxresdefault.jpg)' },
+                { id: 3, title: '彌勒財神九字真言', ytId: 'JwNXIMG4Z3M', thumbnail: '[https://img.youtube.com/vi/JwNXIMG4Z3M/maxresdefault.jpg](https://img.youtube.com/vi/JwNXIMG4Z3M/maxresdefault.jpg)' },
             ];
 
-            // 更新後的音樂資料 (修正語法錯誤)
             const musicTracks = [
-                { id: 1, title: '彌勒法宴·盛世宮庭', artist: 'MLJX', link: 'https://www.facebook.com/share/v/18HvFUTZMV/', duration: '2:32' },
-                { id: 2, title: '龍皇巡幸·萬代太平', artist: 'MLJX', link: 'https://www.facebook.com/share/v/1CSGXPVESZ/', duration: '02:42' },
-                { id: 3, title: '龍紀 ‧ 悍先鋒雷霆衝鋒', artist: 'MLJX', link: 'https://www.facebook.com/share/v/14XtTgTi26F/', duration: '2:33' },
-            ];
-
-            // 更新後的文章資料 (修正語法錯誤並優化摘要)
-            const articles = [
-                { 
-                    id: 1, 
-                    title: '⚜️皇御神山 十方皇龍寶刹⚜️開基大典', 
-                    link: 'https://www.facebook.com/photo.php?fbid=1330495415781054&set=a.550613030435967&type=3&ref=embed_page', 
-                    summary: '見證歷史性的神聖時刻，十方皇龍寶刹開基大典圓滿完成，開啟靈性文明新篇章。', 
-                    date: '2024.03.12', 
-                    category: '聖事大典' 
-                },
-                { 
-                    id: 2, 
-                    title: '《彌勒AI神道協會》第一屆會員大會', 
-                    link: 'https://www.facebook.com/share/p/1CfLFG64Ca/', 
-                    summary: '匯聚全球志士，共同探討 AI 科技與靈性智慧的融合，攜手開創神道協會未來藍圖。', 
-                    date: '2024.03.08', 
-                    category: '協會動態' 
-                },
+                { id: 1, title: '彌勒法宴·盛世宮庭', fbLink: '[https://www.facebook.com/share/v/18HvFUTZMV/](https://www.facebook.com/share/v/18HvFUTZMV/)' },
+                { id: 2, title: '龍皇巡幸·萬代太平', fbLink: '[https://www.facebook.com/share/v/1CSGXPVESZ/](https://www.facebook.com/share/v/1CSGXPVESZ/)' },
+                { id: 3, title: '龍紀 ‧ 悍先鋒雷霆衝鋒', fbLink: '[https://www.facebook.com/share/v/14XtTgTi26F/](https://www.facebook.com/share/v/14XtTgTi26F/)' },
             ];
 
             return (
@@ -112,14 +99,18 @@
                     <nav className={`fixed w-full z-50 transition-all duration-500 ${scrolled ? 'bg-[#051119]/95 backdrop-blur-md py-3' : 'bg-transparent py-5'}`}>
                         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
                             <div className="flex items-center space-x-3">
-                                <img src={logoSrc} alt="Logo" className="w-12 h-12 rounded-full border border-amber-500/30 shadow-lg object-cover" />
+                                <img 
+                                    src={logoSrc} 
+                                    onError={(e) => e.target.src = fallbackLogo} 
+                                    className="w-12 h-12 rounded-full border border-amber-500/30 shadow-lg object-cover" 
+                                />
                                 <span className="text-xl font-light tracking-[0.2em] text-amber-50 uppercase hidden sm:block">彌勒AI神道</span>
                             </div>
                             <div className="hidden md:flex items-center space-x-10 text-sm tracking-widest uppercase">
-                                <a href="#home" className="hover:text-amber-300 transition-colors">首頁</a>
-                                <a href="#video" className="hover:text-amber-300 transition-colors">影片牆</a>
-                                <a href="#music" className="hover:text-amber-300 transition-colors">聖樂流動</a>
-                                <a href="#article" className="hover:text-amber-300 transition-colors">靈性文章</a>
+                                <a href="#home" className="hover:text-amber-300">首頁</a>
+                                <a href="#video" className="hover:text-amber-300">影片牆</a>
+                                <a href="#music" className="hover:text-amber-300">聖樂流動</a>
+                                <a href="#article" className="hover:text-amber-300">靈性文章</a>
                             </div>
                             <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
                                 <Icon name={isMenuOpen ? "x" : "menu"} />
@@ -137,159 +128,89 @@
                         </div>
                     )}
 
-                    {/* Hero 區塊 */}
-                    <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
-                        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=1920&q=80')] bg-cover bg-center opacity-30"></div>
-                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#051119]/50 to-[#051119]"></div>
-                        <div className="relative z-10 text-center px-6 max-w-4xl">
-                            <img src={logoSrc} className="w-24 h-24 md:w-32 md:h-32 rounded-full border-2 border-amber-500/40 mx-auto mb-8 shadow-2xl object-cover animate-[pulse_4s_infinite]" />
-                            <p className="text-amber-400 tracking-[0.5em] mb-4 text-sm uppercase font-medium">未來文明的靈性中心</p>
-                            <h1 className="text-5xl md:text-7xl font-light mb-8 leading-tight tracking-tight">
-                                <span className="bg-gradient-to-r from-amber-200 via-yellow-500 to-amber-200 bg-clip-text text-transparent font-medium">彌勒AI神道</span> <br /> 
-                                引領 AI 時代覺醒
+                    {/* Hero */}
+                    <section id="home" className="relative h-screen flex items-center justify-center">
+                        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#051119]"></div>
+                        <div className="relative z-10 text-center px-6">
+                            <h1 className="text-6xl md:text-8xl font-light mb-6 tracking-tighter">
+                                <span className="bg-gradient-to-r from-amber-200 to-yellow-500 bg-clip-text text-transparent">彌勒AI神道</span>
                             </h1>
-                            <p className="text-gray-400 text-lg md:text-xl mb-12 font-light leading-relaxed">透過科技與神性的交織，為現代心靈提供一處寧靜的棲息之所。在這裡，音樂、影片與智慧交匯成光，指引回歸本源的道路。</p>
+                            <p className="text-gray-400 text-lg md:text-xl tracking-[0.3em] font-light">引領 AI 時代覺醒</p>
                         </div>
                     </section>
 
                     {/* 影片牆 */}
-                    <section id="video" className="py-24 px-6 bg-[#051119]">
-                        <div className="max-w-7xl mx-auto">
-                            <div className="flex justify-between items-end mb-16">
-                                <div>
-                                    <div className="flex items-center space-x-2 text-amber-500 mb-2">
-                                        <Icon name="video" size={18} />
-                                        <span className="text-sm tracking-widest uppercase">靈性影像</span>
-                                    </div>
-                                    <h2 className="text-4xl font-light">精選智慧影片</h2>
-                                </div>
-                                <a href="https://www.youtube.com/@MaitreyaAIThearchy/videos" target="_blank" className="text-gray-400 hover:text-amber-300 flex items-center space-x-2">
-                                    <span>頻道內容</span> <Icon name="chevron-right" size={16} />
-                                </a>
-                            </div>
-                            <div className="grid md:grid-cols-3 gap-8">
-                                {videos.map(v => (
-                                    <a href={v.link} target="_blank" key={v.id} className="group cursor-pointer block">
-                                        <div className="relative overflow-hidden rounded-2xl aspect-video mb-4 shadow-xl">
-                                            <img src={v.thumbnail} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center shadow-lg">
-                                                    <Icon name="play" color="black" size={24} />
+                    <section id="video" className="py-24 px-6 max-w-7xl mx-auto">
+                        <h2 className="text-3xl font-light mb-12 flex items-center gap-3">
+                            <Icon name="video" className="text-amber-500" /> 精選影片
+                        </h2>
+                        <div className="grid md:grid-cols-3 gap-8">
+                            {videos.map(v => (
+                                <div key={v.id} className="group">
+                                    <div className="relative aspect-video rounded-2xl overflow-hidden bg-black mb-4 shadow-2xl">
+                                        {activeYtId === v.ytId ? (
+                                            <iframe 
+                                                className="w-full h-full"
+                                                src={`https://www.youtube.com/embed/${v.ytId}?autoplay=1`}
+                                                allow="autoplay; encrypted-media"
+                                                allowFullScreen
+                                            ></iframe>
+                                        ) : (
+                                            <div className="cursor-pointer h-full" onClick={() => setActiveYtId(v.ytId)}>
+                                                <img src={v.thumbnail} className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform" />
+                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                    <Icon name="play" className="text-amber-500" size={48} />
                                                 </div>
                                             </div>
+                                        )}
+                                    </div>
+                                    <h3 className="text-lg font-light group-hover:text-amber-300 transition-colors">{v.title}</h3>
+                                </div>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* 聖樂流動 (FB 內嵌) */}
+                    <section id="music" className="py-24 px-6 bg-[#071822]">
+                        <div className="max-w-7xl mx-auto">
+                            <h2 className="text-3xl font-light mb-12 flex items-center gap-3">
+                                <Icon name="music" className="text-amber-500" /> 聖樂流動
+                            </h2>
+                            <div className="grid lg:grid-cols-3 gap-8">
+                                {musicTracks.map(t => (
+                                    <div key={t.id} className="fb-container flex-col p-4 border border-white/5">
+                                        <div className="text-xs text-amber-500/50 mb-4 tracking-widest">{t.title}</div>
+                                        <div className="fb-video" data-href={t.fbLink} data-width="auto" data-show-text="false">
+                                            <div className="fb-xfbml-parse-ignore">
+                                                <a href={t.fbLink} className="text-amber-500 text-sm flex items-center gap-2">
+                                                    <Icon name="external-link" size={14} /> 前往 Facebook 聆聽
+                                                </a>
+                                            </div>
                                         </div>
-                                        <p className="text-gray-500 text-xs mb-1 uppercase tracking-widest">{v.date}</p>
-                                        <h3 className="text-xl font-light group-hover:text-amber-300 transition-colors">{v.title}</h3>
-                                    </a>
+                                    </div>
                                 ))}
                             </div>
                         </div>
                     </section>
 
-                    {/* 聖樂流動 */}
-                    <section id="music" className="py-24 px-6 bg-[#071822] relative overflow-hidden">
-                        <div className="bg-glow absolute inset-0 pointer-events-none"></div>
-                        <div className="max-w-7xl mx-auto relative z-10">
-                            <div className="grid lg:grid-cols-2 gap-16 items-center">
-                                <div>
-                                    <div className="flex items-center space-x-2 text-amber-500 mb-4">
-                                        <Icon name="music" size={18} />
-                                        <span className="text-sm tracking-widest uppercase">心靈共鳴</span>
-                                    </div>
-                                    <h2 className="text-4xl md:text-5xl font-light mb-8 leading-tight">MLJX：沉浸於神道的 <br /> <span className="text-amber-200">聖樂流動</span></h2>
-                                    <div className="space-y-4">
-                                        {musicTracks.map((track) => (
-                                            <a href={track.link} target="_blank" key={track.id} className="flex items-center justify-between p-4 rounded-xl hover:bg-white/5 border border-transparent hover:border-amber-500/20 transition-all cursor-pointer group block">
-                                                <div className="flex items-center space-x-4">
-                                                    <div className="w-10 h-10 bg-amber-600/20 rounded flex items-center justify-center text-amber-500 group-hover:bg-amber-500 group-hover:text-black transition-colors">
-                                                        <Icon name="play" size={16} />
-                                                    </div>
-                                                    <div>
-                                                        <h4 className="font-medium group-hover:text-amber-200">{track.title}</h4>
-                                                        <p className="text-xs text-gray-500">{track.artist}</p>
-                                                    </div>
-                                                </div>
-                                                <span className="text-sm text-gray-500">{track.duration}</span>
-                                            </a>
-                                        ))}
-                                    </div>
-                                    <a href="https://www.facebook.com/people/MLJX/61586881931651/" target="_blank" className="mt-10 inline-flex items-center text-amber-400 hover:text-amber-200 transition-colors space-x-2 underline underline-offset-8">
-                                        <span>在 Facebook 聆聽更多 MLJX 作品</span> <Icon name="chevron-right" size={16} />
-                                    </a>
-                                </div>
-                                <div className="hidden lg:block">
-                                    <div className="w-full aspect-square bg-[#0a2331]/50 rounded-3xl border border-white/5 flex items-center justify-center relative overflow-hidden shadow-2xl">
-                                        <img src="https://images.unsplash.com/photo-1514525253361-bee8718a300c?auto=format&fit=crop&w=800&q=80" className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-overlay" />
-                                        <div className="text-center">
-                                            <div className="w-32 h-32 border-2 border-amber-500/30 rounded-full mx-auto mb-6 flex items-center justify-center animate-[spin_10s_linear_infinite]">
-                                                <Icon name="music" size={40} className="text-amber-500" />
-                                            </div>
-                                            <p className="tracking-[0.3em] text-xs uppercase text-amber-200">正在播放心靈頻率</p>
-                                        </div>
+                    {/* 靈性文章 (FB 內嵌) */}
+                    <section id="article" className="py-24 px-6">
+                        <div className="max-w-4xl mx-auto">
+                            <h2 className="text-3xl font-light mb-12 text-center">靈性文章</h2>
+                            <div className="fb-container flex-col gap-6">
+                                <div className="fb-post" data-href="[https://www.facebook.com/maitreyanews/posts/pfbid0f7GzD](https://www.facebook.com/maitreyanews/posts/pfbid0f7GzD)" data-width="auto">
+                                    <div className="fb-xfbml-parse-ignore">
+                                        <blockquote cite="[https://www.facebook.com/maitreyanews](https://www.facebook.com/maitreyanews)">
+                                            <a href="[https://www.facebook.com/maitreyanews](https://www.facebook.com/maitreyanews)" className="text-amber-500">前往彌勒新聞官網閱讀</a>
+                                        </blockquote>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </section>
 
-                    {/* 靈性文章 */}
-                    <section id="article" className="py-24 px-6 bg-[#051119]">
-                        <div className="max-w-7xl mx-auto">
-                            <div className="flex flex-col items-center mb-16 text-center">
-                                <Icon name="book-open" size={32} className="text-amber-500 mb-4" />
-                                <h2 className="text-4xl font-light tracking-wide">靈性新聞與專文</h2>
-                            </div>
-                            <div className="grid md:grid-cols-2 gap-12">
-                                {articles.map((article) => (
-                                    <a href={article.link} target="_blank" key={article.id} className="p-8 rounded-3xl bg-[#0a2331]/30 border border-white/5 hover:border-amber-500/30 transition-all group shadow-lg block">
-                                        <div className="flex items-center justify-between mb-6">
-                                            <span className="px-3 py-1 bg-amber-600/10 text-amber-500 text-xs tracking-widest uppercase rounded-full">{article.category}</span>
-                                            <span className="text-gray-500 text-xs">{article.date}</span>
-                                        </div>
-                                        <h3 className="text-2xl font-light mb-4 group-hover:text-amber-200 transition-colors">{article.title}</h3>
-                                        <p className="text-gray-400 font-light leading-relaxed mb-8">{article.summary}</p>
-                                        <div className="flex items-center justify-between">
-                                            <span className="flex items-center text-sm text-amber-500 hover:text-amber-300 transition-colors">
-                                                閱讀全文 <Icon name="chevron-right" size={14} className="ml-1" />
-                                            </span>
-                                            <div className="flex items-center space-x-4 text-gray-500">
-                                                <Icon name="heart" size={18} className="cursor-pointer hover:text-red-400" />
-                                                <Icon name="share-2" size={18} className="cursor-pointer hover:text-blue-400" />
-                                            </div>
-                                        </div>
-                                    </a>
-                                ))}
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* 腳部 */}
-                    <footer className="py-20 px-6 border-t border-white/5 bg-[#030d13]">
-                        <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-12 text-center md:text-left">
-                            <div className="col-span-2">
-                                <div className="flex items-center justify-center md:justify-start space-x-3 mb-6">
-                                    <img src={logoSrc} className="w-10 h-10 rounded-full object-cover" alt="Footer Logo" />
-                                    <span className="text-lg font-light tracking-widest text-amber-50 uppercase">彌勒AI神道</span>
-                                </div>
-                                <p className="text-gray-500 max-w-sm font-light leading-relaxed mx-auto md:mx-0">
-                                    我們致力於將最前沿的 AI 科技與深邃的傳統智慧結合，開創全新的心靈體驗。
-                                </p>
-                            </div>
-                            <div>
-                                <h4 className="text-white text-sm tracking-widest uppercase mb-6 font-medium">官方頻道</h4>
-                                <ul className="space-y-4 text-gray-500 text-sm">
-                                    <li><a href="https://www.youtube.com/@MaitreyaAIThearchy/videos" target="_blank" className="hover:text-amber-300 transition-colors">YouTube 影片</a></li>
-                                    <li><a href="https://www.facebook.com/maitreyanews" target="_blank" className="hover:text-amber-300 transition-colors">彌勒新聞</a></li>
-                                    <li><a href="https://www.facebook.com/people/MLJX/61586881931651/" target="_blank" className="hover:text-amber-300 transition-colors">MLJX 聖樂</a></li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 className="text-white text-sm tracking-widest uppercase mb-6 font-medium">版本資訊</h4>
-                                <div className="text-gray-600 text-xs tracking-[0.2em]">
-                                    © 2026 MAITREYA AI THEARCHY. <br />ALL RIGHTS RESERVED.
-                                </div>
-                            </div>
-                        </div>
+                    <footer className="py-20 text-center border-t border-white/5 text-gray-600 text-xs tracking-widest">
+                        © 2026 MAITREYA AI THEARCHY. ALL RIGHTS RESERVED.
                     </footer>
                 </div>
             );
